@@ -1,0 +1,154 @@
+<!-- INTRO PAGE -->
+<div *ngIf="showIntro" class="intro-container">
+  <div class="intro-card">
+    <a href="https://www.polytechnique.edu/fr" target="_blank">
+    <img src="assets/image.png" alt="École Polytechnique Logo" class="intro-logo" />
+  </a>
+    
+    <h1>Bienvenue sur test Auto-évaluation de maturité de ses pratiques de gestion de l’innovation</h1>
+    <p>
+      Ce questionnaire vous permet d'autoévaluer la maturité de votre organisation en matière d'innovation, selon les référentiels internationaux (ISO 56002, Oslo, AFNOR, etc.).
+    </p>
+    <ul>
+      <li>6 axes clés, 20 questions</li>
+      <li>Répondez en toute simplicité : <b>Non</b>, <b>Partiellement</b>, <b>Oui</b></li>
+      <li>Recevez votre score de maturité à la fin !</li>
+    </ul>
+    <button mat-raised-button color="primary" class="intro-btn" (click)="startSurvey()">
+      <span class="material-icons">play_arrow</span>
+      Commencer le questionnaire
+    </button>
+    <div class="support-text">
+      Avec le soutien technique de Relief Applications
+    </div>
+    <a href="https://reliefapplications.org/" target="_blank">
+      <img src="assets/logo.png" alt="Relief Applications Logo" class="support-logo" style="width: 100px; height: auto;" />
+    </a>  </div>
+  
+</div>
+
+<!-- STATISTICS PAGE -->
+<div *ngIf="!showIntro && showStatsPage" class="stats-page">
+  <div class="stats-card">
+    <h2>Merci d'avoir répondu au questionnaire !</h2>
+    <p>Nous allons vous donner le résultat dans un instant.<br>
+    Pouvez-vous, juste, répondre aux questions ci-dessous pour nous aider à analyser les résultats statistiques ?</p>
+    <form (ngSubmit)="submitStats()" #statsForm="ngForm">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Votre fonction actuelle</mat-label>
+        <mat-select required [(ngModel)]="stats.fonction" name="fonction">
+          <mat-option value="Direction générale">Direction générale</mat-option>
+          <mat-option value="Directeur/Responsable d'unité ou département">Directeur/Responsable d'unité ou département</mat-option>
+          <mat-option value="Directeur Stratégie / Transformation">Directeur Stratégie / Transformation</mat-option>
+          <mat-option value="Responsable Innovation / R&D">Responsable Innovation / R&D</mat-option>
+          <mat-option value="Responsable Numérique / IT / Data">Responsable Numérique / IT / Data</mat-option>
+          <mat-option value="Autre">Autre</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="stats.fonction === 'Autre'" appearance="fill" class="full-width">
+        <mat-label>Précisez</mat-label>
+        <input matInput [(ngModel)]="stats.fonctionAutre" name="fonctionAutre">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Genre</mat-label>
+        <mat-select required [(ngModel)]="stats.genre" name="genre">
+          <mat-option value="Femme">Femme</mat-option>
+          <mat-option value="Homme">Homme</mat-option>
+          <mat-option value="Personne non binaire - autre identité de genre">Personne non binaire - autre identité de genre</mat-option>
+          <mat-option value="Je préfère ne pas répondre">Je préfère ne pas répondre</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Niveau d'implication dans l'innovation</mat-label>
+        <mat-select required [(ngModel)]="stats.implication" name="implication">
+          <mat-option value="Je définis et propose les budgets et les lignes stratégiques">Je définis et propose les budgets et les lignes stratégiques</mat-option>
+          <mat-option value="J'approuve les projets et les budgets stratégiques">J'approuve les projets et les budgets stratégiques</mat-option>
+          <mat-option value="J'influence les décisions ou j'alloue des ressources">J'influence les décisions ou j'alloue des ressources</mat-option>
+          <mat-option value="Je contribue à l'exécution mais sans rôle décisionnel">Je contribue à l'exécution mais sans rôle décisionnel</mat-option>
+          <mat-option value="Je ne suis pas impliqué(e)">Je ne suis pas impliqué(e)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Taille de l'organisation</mat-label>
+        <mat-select required [(ngModel)]="stats.taille" name="taille">
+          <mat-option value="Moins de 50">Moins de 50</mat-option>
+          <mat-option value="50-249">50-249</mat-option>
+          <mat-option value="250-999">250-999</mat-option>
+          <mat-option value="1 000+">1 000+</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Localisation</mat-label>
+        <mat-select required [(ngModel)]="stats.localisation" name="localisation">
+          <mat-option value="France">France</mat-option>
+          <mat-option value="Europe">Europe</mat-option>
+          <mat-option value="Monde">Monde</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Secteur principal d'activité</mat-label>
+        <mat-select required [(ngModel)]="stats.secteur" name="secteur">
+          <mat-option *ngFor="let s of secteurs" [value]="s">{{s}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="stats-btn" type="submit" [disabled]="!statsForm.form.valid">Voir mon score</button>
+    </form>
+  </div>
+</div>
+
+<!-- RESULT PAGE -->
+<div *ngIf="!showIntro && showResultPage" class="result-page">
+  <div class="result-card">
+    <div class="result-label">Votre score de maturité</div>
+    <div class="maturity-badge" [ngClass]="getMaturity().toLowerCase()">
+      {{ getMaturity() }}
+    </div>
+    <div class="score-gauge">
+      <div class="gauge-bg">
+        <div class="gauge-fill" [style.left]="((animatedScore + 20) / 40 * 100) + '%'" ></div>
+        <div class="gauge-label min">-20</div>
+        <div class="gauge-label max">20</div>
+        <div class="gauge-label current">{{ animatedScore }}</div>
+      </div>
+    </div> 
+    <div class="improvement-tips" *ngIf="getImprovementTips().length">
+      <h3>Conseils personnalisés pour progresser :</h3>
+      <ul>
+        <li *ngFor="let tip of getImprovementTips()">{{ tip }}</li>
+      </ul>
+    </div>
+    <button mat-raised-button color="primary" (click)="reset()">Recommencer</button>
+  </div>
+  <div class="confetti"></div>
+</div>
+<!-- SURVEY PAGE -->
+<div *ngIf="!showIntro && !showResultPage && !showStatsPage" class="survey-frame">
+  <mat-horizontal-stepper linear>
+    <mat-step *ngFor="let category of survey; let i = index">
+      <form>
+        <ng-template matStepLabel>{{category.title}}</ng-template>
+        <h2 class="step-title">{{category.title}}</h2>
+        <div *ngFor="let q of category.questions; let j = index">
+          <p><b>{{q.text}}</b> <br><small>{{q.reference}}</small></p>
+          <mat-radio-group [(ngModel)]="answers[i][j]" name="q{{i}}-{{j}}">
+            <mat-radio-button [value]="-1">Non</mat-radio-button>
+            <mat-radio-button [value]="0">Partiellement</mat-radio-button>
+            <mat-radio-button [value]="1">Oui</mat-radio-button>
+          </mat-radio-group>
+          <hr>
+        </div>
+        <div>
+          <button mat-button matStepperPrevious *ngIf="i > 0">Précédent</button>
+          <button mat-button matStepperNext *ngIf="i < survey.length - 1" [disabled]="!allAnsweredForStep(i)">Suivant</button>
+          <button mat-button *ngIf="i === survey.length - 1" (click)="showStatsPage = true" [disabled]="!allAnsweredForStep(i)">Voir le score</button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>
