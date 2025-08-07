@@ -165,11 +165,12 @@ export class SurveyComponent {
     formData.append(entryIds[index++], this.stats.taille ?? '');
     formData.append(entryIds[index++], this.stats.localisation ?? '');
     formData.append(entryIds[index++], this.stats.secteur ?? '');
-    formData.append(entryIds[index++], this.stats.email ?? '');
   
     // Append score and maturity
     formData.append(entryIds[index++], String(this.getScore() ?? ''));
     formData.append(entryIds[index++], this.getMaturity() ?? '');
+    formData.append(entryIds[index++], this.stats.email ?? '');
+
   
     this.http.post(url, formData.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

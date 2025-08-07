@@ -96,6 +96,14 @@
           <mat-option *ngFor="let s of secteurs" [value]="s">{{s}}</mat-option>
         </mat-select>
       </mat-form-field>
+      <!-- Email opt-in for report publication -->
+      <div style="margin: 15px 0 8px 0; font-weight: 500;">
+        Laissez votre email si vous souhaitez être informé de la publication du rapport d’analyse :
+      </div>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="stats.email" name="email" type="email">
+      </mat-form-field>
 
       <button mat-raised-button color="primary" class="stats-btn" type="submit" [disabled]="!statsForm.form.valid">Voir mon score</button>
     </form>
