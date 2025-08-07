@@ -32,7 +32,8 @@ export class SurveyComponent {
     implication: '',
     taille: '',
     localisation: '',
-    secteur: ''
+    secteur: '',
+    email:''
   };
 
   secteurs = [
@@ -60,37 +61,37 @@ export class SurveyComponent {
   ];
 
   improvementTips: { [key: string]: string } = {
-    // Vision, stratégie et alignement
-    "0-0": "Formalisez une stratégie d’innovation claire alignée sur les objectifs globaux de l’organisation et engagez la direction dans sa promotion.",
-    "0-1": "Mettez en place une feuille de route dédiée à l’innovation, mise à jour régulièrement, avec jalons et revues périodiques.",
-    "0-2": "Rédigez et communiquez une politique d’innovation formelle, visible à tous les niveaux de l'organisation.",
-  
-    // Gouvernance, processus et pilotage
-    "1-0": "Installez des processus standards couvrant le cycle complet d’innovation : idée, validation, développement, lancement.",
-    "1-1": "Définissez des critères objectifs (ROI, alignement stratégique, maturité technologique) pour évaluer et sélectionner les idées.",
-    "1-2": "Établissez un comité ou une gouvernance dédiée à l’innovation pour piloter efficacement les projets et assurer leur suivi.",
-    "1-3": "Encouragez la participation à des appels à projets et programmes collaboratifs afin d’étendre vos capacités et ressources d’innovation.",
-  
-    // Culture, leadership et compétences
-    "2-0": "Renforcez la culture de l’innovation à travers des valeurs partagées, des rituels internes et la reconnaissance des initiatives innovantes.",
-    "2-1": "Valorisez les enseignements tirés des échecs comme opportunités d’apprentissage et intégrez-les dans les retours d’expérience.",
-    "2-2": "Mettez en œuvre un plan de développement des compétences en innovation : formations, mentorat, certifications spécialisées, etc.",
-  
-    // Exploration, méthodes et outils
-    "3-0": "Organisez une veille active sur les tendances, technologies émergentes et signaux faibles, avec un partage structuré des insights.",
-    "3-1": "Adoptez des méthodes agiles et centrées utilisateur (Design Thinking, Lean Startup) pour expérimenter rapidement et impliquer les parties prenantes.",
-    "3-2": "Implémentez des outils numériques collaboratifs pour gérer le portefeuille d’innovation, les idées et le suivi des indicateurs.",
-    "3-3": "Allouez un budget dédié à l’innovation pour financer les idées, prototypes, expérimentations et partenariats extérieurs.",
-  
-    // Mesure, évaluation et pilotage de la performance
-    "4-0": "Définissez des indicateurs clés (KPIs) pour suivre l'avancement et l’impact des projets d’innovation (ex : TRL, ROI, time-to-market).",
-    "4-1": "Évaluez régulièrement l’efficacité de votre système d’innovation pour ajuster vos pratiques, processus et moyens mobilisés.",
-    "4-2": "Utilisez des tableaux de bord dynamiques et des scorecards pour visualiser et piloter l’ensemble de votre portefeuille d’innovation.",
-  
-    // Ouverture, parties prenantes et co-innovation
-    "5-0": "Nouez des partenariats actifs avec des startups, laboratoires de recherche, clusters ou universités pour enrichir votre écosystème d’innovation.",
-    "5-1": "Impliquez les utilisateurs finaux ou clients dès les phases amont (co-design, tests, retours) pour orienter les solutions vers leurs besoins réels.",
-    "5-2": "Développez une stratégie d’innovation ouverte : hackathons, open data, plateformes collaboratives, appels à idées externes, etc."
+    // Chapter 1 :  Vision, stratégie et alignement
+    "1-1": "Formalisez une stratégie d’innovation claire alignée sur les objectifs globaux de l’organisation et engagez la direction dans sa promotion.",
+    "1-2": "Mettez en place une feuille de route dédiée à l’innovation, mise à jour régulièrement, avec jalons et revues périodiques.",
+    "1-3": "Rédigez et communiquez une politique d’innovation formelle, visible à tous les niveaux de l'organisation.",
+
+    // Chapter 2 :  Gouvernance, processus et pilotage
+    "2-1": "Installez des processus standards couvrant le cycle complet d’innovation : idée, validation, développement, lancement.",
+    "2-2": "Définissez des critères objectifs (ROI, alignement stratégique, maturité technologique) pour évaluer et sélectionner les idées.",
+    "2-3": "Établissez un comité ou une gouvernance dédiée à l’innovation pour piloter efficacement les projets et assurer leur suivi.",
+    "2-4": "Encouragez la participation à des appels à projets et programmes collaboratifs afin d’étendre vos capacités et ressources d’innovation.",
+
+    // Chapter 3 :  Culture, leadership et compétences
+    "3-1": "Renforcez la culture de l’innovation à travers des valeurs partagées, des rituels internes et la reconnaissance des initiatives innovantes.",
+    "3-2": "Valorisez les enseignements tirés des échecs comme opportunités d’apprentissage et intégrez-les dans les retours d’expérience.",
+    "3-3": "Mettez en œuvre un plan de développement des compétences en innovation : formations, mentorat, certifications spécialisées, etc.",
+
+    // Chapter 4 :  Exploration, méthodes et outils
+    "4-1": "Organisez une veille active sur les tendances, technologies émergentes et signaux faibles, avec un partage structuré des insights.",
+    "4-2": "Adoptez des méthodes agiles et centrées utilisateur (Design Thinking, Lean Startup) pour expérimenter rapidement et impliquer les parties prenantes.",
+    "4-3": "Implémentez des outils numériques collaboratifs pour gérer le portefeuille d’innovation, les idées et le suivi des indicateurs.",
+    "4-4": "Allouez un budget dédié à l’innovation pour financer les idées, prototypes, expérimentations et partenariats extérieurs.",
+
+    // Chapter 5 :  Mesure, évaluation et pilotage de la performance
+    "5-1": "Définissez des indicateurs clés (KPIs) pour suivre l'avancement et l’impact des projets d’innovation (ex : TRL, ROI, time-to-market).",
+    "5-2": "Évaluez régulièrement l’efficacité de votre système d’innovation pour ajuster vos pratiques, processus et moyens mobilisés.",
+    "5-3": "Utilisez des tableaux de bord dynamiques et des scorecards pour visualiser et piloter l’ensemble de votre portefeuille d’innovation.",
+
+    // Chapter 6 :  Ouverture, parties prenantes et co-innovation
+    "6-1": "Nouez des partenariats actifs avec des startups, laboratoires de recherche, clusters ou universités pour enrichir votre écosystème d’innovation.",
+    "6-2": "Impliquez les utilisateurs finaux ou clients dès les phases amont (co-design, tests, retours) pour orienter les solutions vers leurs besoins réels.",
+    "6-3": "Développez une stratégie d’innovation ouverte : hackathons, open data, plateformes collaboratives, appels à idées externes, etc."
   };
 
   getImprovementTips(): string[] {
@@ -98,7 +99,7 @@ export class SurveyComponent {
     this.answers.forEach((cat, catIdx) => {
       cat.forEach((ans, qIdx) => {
         if (ans === -1 || ans === 0) {
-          const key = `${catIdx}-${qIdx}`;
+          const key = `${catIdx + 1}-${qIdx + 1}`;
           if (this.improvementTips[key]) {
             tips.push(this.improvementTips[key]);
           }
@@ -173,7 +174,9 @@ export class SurveyComponent {
   
       // score & maturity
       'entry.1575259241', // score
-      'entry.414093662'   // maturity
+      'entry.414093662',   // maturity
+      //email
+      'entry.599182817'
     ];
   
     const formData = new URLSearchParams();
@@ -194,6 +197,7 @@ export class SurveyComponent {
     formData.append(entryIds[index++], this.stats.taille ?? '');
     formData.append(entryIds[index++], this.stats.localisation ?? '');
     formData.append(entryIds[index++], this.stats.secteur ?? '');
+    formData.append(entryIds[index++], this.stats.email ?? '');
   
     // Append score and maturity
     formData.append(entryIds[index++], String(this.getScore() ?? ''));
@@ -236,7 +240,8 @@ export class SurveyComponent {
       implication: '',
       taille: '',
       localisation: '',
-      secteur: ''
+      secteur: '',
+      email:''
     };
   }
 

@@ -20,7 +20,7 @@
 
 .intro-logo {
   width: 450px;
-height:auto;
+  height:auto;
   margin-bottom: 1rem;
   filter: drop-shadow(0 2px 8px #1a4b6b33);
 }
@@ -66,36 +66,11 @@ height:auto;
   font-size: 1.4em;
 }
 
-/* Animate intro */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(40px);}
   to { opacity: 1; transform: none;}
 }
 
-body, .survey-bg {
-  min-height: 100vh;
-  background: linear-gradient(120deg, #fff 60%, #f8f8fa 100%);
-}
-
-.survey-bg {
-  width: 100vw;
-  min-height: 100vh;
-  position: fixed;
-  top: 0; left: 0;
-  z-index: -1;
-}
-
-.vanta-bg {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* Survey stepper and questions styling */
 .survey-frame mat-horizontal-stepper {
   margin: 0 auto;
   max-width: 1100px;
@@ -107,7 +82,6 @@ body, .survey-bg {
   transition: background 0.3s;
 }
 
-/* Ensure stepper titles are fully visible */
 .mat-step-label, .mat-horizontal-stepper-header .mat-step-label {
   font-size: 1.35rem !important;
   font-weight: 600;
@@ -158,7 +132,6 @@ hr {
   line-height: 1.2;
 }
 
-/* Result page styles */
 .result-page {
   min-height: 100vh;
   display: flex;
@@ -216,10 +189,6 @@ hr {
   filter: drop-shadow(0 1px 4px #1a4b6b33);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(40px);}
-  to { opacity: 1; transform: none;}
-}
 @keyframes popIn {
   0% { transform: scale(0.7);}
   80% { transform: scale(1.1);}
@@ -239,7 +208,6 @@ hr {
   100% { background-position: bottom center; }
 }
 
-/* Statistics page styles */
 .stats-page {
   min-height: 100vh;
   display: flex;
@@ -348,17 +316,98 @@ hr {
 }
 
 @media (max-width: 600px) {
-  .survey-frame mat-horizontal-stepper {
-    padding: 1rem 0.2rem 1.5rem 0.2rem;
+  .intro-container,
+  .stats-page,
+  .result-page {
+    align-items: flex-start;
+    padding-top: 4vh;
+    padding-bottom: 4vh;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .intro-card,
+  .stats-card,
+  .result-card {
+    max-width: 98vw;
+    width: 100%;
+    padding: 1.5rem 0.7rem 2rem 0.7rem;
+    border-radius: 22px;
+    border-width: 1.2px;
+    box-shadow: 0 2px 8px #1a4b6b18, 0 1.5px 8px #8881;
+  }
+  .intro-logo {
+    width: 60vw;
+    min-width: 90px;
+    max-width: 180px;
+    margin-bottom: 0.5rem;
+  }
+  .intro-card h1 {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.25;
+  }
+  .intro-card p,
+  .stats-card p {
+    font-size: 0.93rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.4;
+  }
+  .intro-card ul {
+    font-size: 0.91rem;
+    margin-bottom: 1.1rem;
+    padding-left: 0.5rem;
+  }
+  .intro-btn,
+  .stats-btn {
+    font-size: 0.97rem;
+    padding: 0.6rem 0.5rem;
+    width: 100%;
     min-width: 0;
-    max-width: 100vw;
+    margin-bottom: 1.2rem;
   }
-  mat-radio-group {
-    flex-direction: column !important;
-    gap: 0.7rem !important;
-    align-items: flex-start !important;
+  .support-text {
+    font-size: 0.81rem;
+    margin-top: 1.1rem;
+    margin-bottom: 0.1rem;
+    text-align: center;
+    color: #1a4b6bcc;
   }
-  mat-radio-button {
-    font-size: 1rem;
+  .support-logo {
+    display: block;
+    margin: 0.2rem auto 0.7rem auto;
+    width: 54px !important;
+    filter: drop-shadow(0 1px 2px #1a4b6b22) grayscale(0.2) opacity(0.85);
+  }
+  .result-label {
+    font-size: 0.97rem;
+    margin-bottom: 1.1rem;
+  }
+  .maturity-badge {
+    font-size: 0.98rem;
+    padding: 0.35rem 0.8rem;
+  }
+  .score-gauge {
+    margin: 0.8rem 0 1rem 0;
+  }
+  .gauge-label {
+    font-size: 0.8rem;
+  }
+  .gauge-label.current {
+    font-size: 0.93rem;
+    left: calc(50% - 10px);
+    top: -18px;
+  }
+  .improvement-tips {
+    margin-top: 1rem;
+  }
+  .improvement-tips h3 {
+    font-size: 0.93rem;
+  }
+  .improvement-tips ul {
+    font-size: 0.91rem;
+  }
+  .step-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
   }
 }

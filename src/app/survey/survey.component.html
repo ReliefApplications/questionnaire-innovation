@@ -135,7 +135,7 @@
         <ng-template matStepLabel>{{category.title}}</ng-template>
         <h2 class="step-title">{{category.title}}</h2>
         <div *ngFor="let q of category.questions; let j = index">
-          <p><b>{{q.text}}</b> <br><small>{{q.reference}}</small></p>
+          <p><b>{{j + 1}}. {{q.text}}</b> <br><small>{{q.reference}}</small></p>
           <mat-radio-group [(ngModel)]="answers[i][j]" name="q{{i}}-{{j}}">
             <mat-radio-button [value]="-1">Non</mat-radio-button>
             <mat-radio-button [value]="0">Partiellement</mat-radio-button>
