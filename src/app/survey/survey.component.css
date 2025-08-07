@@ -410,4 +410,14 @@ hr {
     font-size: 1.1rem;
     margin-bottom: 1rem;
   }
+  /* Responsive radio buttons for mobile */
+  mat-radio-group {
+    flex-direction: column !important;
+    gap: 0.7rem !important;
+    align-items: flex-start !important;
+  }
+  mat-radio-button {
+    width: 100%;
+    font-size: 1rem;
+  }
 }
