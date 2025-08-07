@@ -176,8 +176,8 @@ export class SurveyComponent {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       responseType: 'text' 
     }).subscribe({
-      next: () => console.log('Form submitted to Google Form successfully ✅'),
-      error: (err) => console.error('Error submitting form:', err)
+      next: () => {},
+      error: (err) => {}
     });
   }
   
