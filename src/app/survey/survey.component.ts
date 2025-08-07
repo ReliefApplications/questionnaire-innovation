@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SURVEY, SurveyCategory } from '../survey-data';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-survey',
@@ -7,8 +8,18 @@ import { SURVEY, SurveyCategory } from '../survey-data';
   styleUrls: ['./survey.component.css']
 })
 export class SurveyComponent {
+  @ViewChild('googleForm') googleForm!: ElementRef<HTMLFormElement>;
+
+
+  constructor(private http: HttpClient) {}
+
+    formData: { [key: string]: string | number } = {};
+
   survey: SurveyCategory[] = SURVEY;
   answers: number[][] = this.survey.map(cat => Array(cat.questions.length).fill(null));
+  getFlatAnswers(): number[] {
+    return this.answers.flat();
+    }
   showIntro = true;
   showResultPage = false;
   showStatsPage = false;
@@ -102,6 +113,7 @@ export class SurveyComponent {
     this.showResultPage = false;
     this.showStatsPage = false;
     this.animatedScore = 0;
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
   }
 
   showScorePage() {
@@ -136,8 +148,66 @@ export class SurveyComponent {
         clearInterval(interval);
       }
     }, 40);
-  }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.sendStatsToGoogleForm();
 
+  }
+  sendStatsToGoogleForm(): void {
+    const url = 'https://docs.google.com/forms/d/e/1FAIpQLSc7a9t7ozf_EHiF6KmQBzPXKySnCdlDQJRny_IQsRBLtQCRvg/formResponse';
+  
+    const entryIds = [
+      // q1–q20
+      'entry.2119067912', 'entry.1579309812', 'entry.1158252944', 'entry.1468148136', 'entry.1327265150',
+      'entry.880436473', 'entry.1626461344', 'entry.609763957', 'entry.189988393', 'entry.726667056',
+      'entry.272881266', 'entry.1750132956', 'entry.1732773880', 'entry.1345586694', 'entry.1637446587',
+      'entry.145419613', 'entry.1865122160', 'entry.1923341165', 'entry.1090405108', 'entry.1758301203',
+      
+      // Stats fields (order must match what you want stored in Google Form)
+      'entry.2094322027', // fonction
+      'entry.1219400843', // fonctionAutre
+      'entry.806004759',  // genre
+      'entry.553406080',  // implication
+      'entry.155918508',  // taille
+      'entry.488694374',  // localisation
+      'entry.1907583316', // secteur
+  
+      // score & maturity
+      'entry.1575259241', // score
+      'entry.414093662'   // maturity
+    ];
+  
+    const formData = new URLSearchParams();
+  
+    // Flatten answers (q1–q20)
+    let index = 0;
+    this.answers.forEach((category: any) => {
+      category.forEach((ans: any) => {
+        formData.append(entryIds[index], ans ?? '');
+        index++;
+      });
+    });
+  
+    formData.append(entryIds[index++], this.stats.fonction ?? '');
+    formData.append(entryIds[index++], this.stats.fonctionAutre ?? '');
+    formData.append(entryIds[index++], this.stats.genre ?? '');
+    formData.append(entryIds[index++], this.stats.implication ?? '');
+    formData.append(entryIds[index++], this.stats.taille ?? '');
+    formData.append(entryIds[index++], this.stats.localisation ?? '');
+    formData.append(entryIds[index++], this.stats.secteur ?? '');
+  
+    // Append score and maturity
+    formData.append(entryIds[index++], String(this.getScore() ?? ''));
+    formData.append(entryIds[index++], this.getMaturity() ?? '');
+  
+    this.http.post(url, formData.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      responseType: 'text' 
+    }).subscribe({
+      next: () => console.log('Form submitted to Google Form successfully ✅'),
+      error: (err) => console.error('Error submitting form:', err)
+    });
+  }
+  
   getScore(): number {
     return this.answers.flat().reduce((acc, val) => acc + (val ?? 0), 0);
   }
@@ -168,5 +238,16 @@ export class SurveyComponent {
       localisation: '',
       secteur: ''
     };
+  }
+
+  onStepChange() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  goToStatsPage() {
+    this.showStatsPage = true;
+    this.showResultPage = false;
+    this.showIntro = false;
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
   }
 }

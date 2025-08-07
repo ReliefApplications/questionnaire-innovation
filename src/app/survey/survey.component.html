@@ -5,7 +5,7 @@
     <img src="assets/image.png" alt="École Polytechnique Logo" class="intro-logo" />
   </a>
     
-    <h1>Bienvenue sur test Auto-évaluation de maturité de ses pratiques de gestion de l’innovation</h1>
+    <h1>Auto-évaluation de l’innovation</h1>
     <p>
       Ce questionnaire vous permet d'autoévaluer la maturité de votre organisation en matière d'innovation, selon les référentiels internationaux (ISO 56002, Oslo, AFNOR, etc.).
     </p>
@@ -129,7 +129,7 @@
 </div>
 <!-- SURVEY PAGE -->
 <div *ngIf="!showIntro && !showResultPage && !showStatsPage" class="survey-frame">
-  <mat-horizontal-stepper linear>
+  <mat-horizontal-stepper linear (selectionChange)="onStepChange()">
     <mat-step *ngFor="let category of survey; let i = index">
       <form>
         <ng-template matStepLabel>{{category.title}}</ng-template>
@@ -146,7 +146,7 @@
         <div>
           <button mat-button matStepperPrevious *ngIf="i > 0">Précédent</button>
           <button mat-button matStepperNext *ngIf="i < survey.length - 1" [disabled]="!allAnsweredForStep(i)">Suivant</button>
-          <button mat-button *ngIf="i === survey.length - 1" (click)="showStatsPage = true" [disabled]="!allAnsweredForStep(i)">Voir le score</button>
+          <button mat-button *ngIf="i === survey.length - 1" (click)="goToStatsPage()" [disabled]="!allAnsweredForStep(i)">Voir le score</button>
         </div>
       </form>
     </mat-step>
