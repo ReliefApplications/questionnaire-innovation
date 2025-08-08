@@ -102,7 +102,11 @@
       </div>
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="stats.email" name="email" type="email">
+        <input matInput [(ngModel)]="stats.email" name="email" type="email"  email
+               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" #emailModel="ngModel">
+        <mat-error *ngIf="emailModel.invalid && emailModel.touched">
+          Veuillez saisir une adresse email valide.
+        </mat-error>
       </mat-form-field>
 
       <button mat-raised-button color="primary" class="stats-btn" type="submit" [disabled]="!statsForm.form.valid">Voir mon score</button>
@@ -134,8 +138,16 @@
       </ul>
     </div>
     <button mat-raised-button color="primary" (click)="reset()">Recommencer</button>
+    <div class="support-text" style="margin-top: 1rem;">
+      Avec le soutien technique de Relief Applications
+    </div>
+    <a href="https://reliefapplications.org/" target="_blank">
+      <img src="assets/logo.png" alt="Relief Applications Logo" class="support-logo" style="width: 100px; height: auto;" />
+    </a>
   </div>
+ 
   <div class="confetti"></div>
+
 </div>
 <!-- SURVEY PAGE -->
 <div *ngIf="!showIntro && !showResultPage && !showStatsPage" class="survey-frame">

@@ -37,6 +37,7 @@
   color: #444;
   font-size: 1.1rem;
   margin-bottom: 1.2rem;
+  text-align: justify;
 }
 
 .intro-card ul {
@@ -221,6 +222,7 @@ hr {
   color: #444;
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
+  text-align: justify;
 }
 
 .full-width {
@@ -301,6 +303,7 @@ hr {
   font-size: 1.08rem;
   color: #1a4b6b;
   border: 1px solid #e0e6ea;
+  text-align: justify;
 }
 .pro-tips-title {
   font-size: 1.1rem;
@@ -323,6 +326,7 @@ hr {
   margin-bottom: 0.5rem;
   color: #1a4b6b;
   font-size: 1.05rem;
+  text-align: justify;
 }
 
 /* Removed old donut chart styles */
@@ -330,7 +334,7 @@ hr {
 .horizontal-bar-container {
   width: 100%;
   max-width: 340px;
-  margin: 0 auto 2.2rem auto;
+  margin: 0.6rem auto 2.2rem auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -355,7 +359,7 @@ hr {
 .horizontal-bar-score {
   position: absolute;
   bottom: 100%;
-  transform: translate(-50%, -6px);
+  transform: translate(-50%, 2px);
   font-size: 1.1rem;
   font-weight: 800;
   color: #1a4b6b;
@@ -509,7 +513,7 @@ hr {
   }
   .horizontal-bar-score {
     font-size: 0.9rem;
-    transform: translate(-50%, -4px);
+    transform: translate(-50%, 1px);
   }
   .horizontal-bar-label {
     font-size: 0.7rem;
