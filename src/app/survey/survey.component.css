@@ -153,28 +153,9 @@ hr {
   animation: fadeIn 1s;
 }
 
-.maturity-badge {
-  display: inline-block;
-  margin: 1.2rem 0 0.7rem 0;
-  padding: 0.5rem 1.5rem;
-  border-radius: 30px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  background: #1a4b6b;
-  color: #fff;
-  box-shadow: 0 2px 8px #1a4b6b33;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  animation: popIn 0.7s;
-}
-.maturity-badge.intermédiaire { background: #ff9800; }
-.maturity-badge.avancé { background: #43a047; }
+/* Removed old badge styles (replaced by .pro-maturity) */
 
-.result-label {
-  color: #888;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
+/* .result-label no longer used */
 
 .support-text {
   color: #1a4b6b;
@@ -261,41 +242,7 @@ hr {
   color: #fff !important;
 }
 
-.score-gauge {
-  margin: 1.5rem 0 2rem 0;
-  width: 100%;
-  position: relative;
-}
-.gauge-bg {
-  background: #e0e6ea;
-  border-radius: 12px;
-  height: 18px;
-  position: relative;
-  width: 100%;
-}
-.gauge-fill {
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 4px;
-  background: #1a4b6b;
-  border-radius: 4px;
-  height: 100%;
-  transition: left 0.7s cubic-bezier(.4,2,.6,1);
-}
-.gauge-label {
-  position: absolute;
-  top: 22px;
-  font-size: 0.95rem;
-  color: #1a4b6b;
-}
-.gauge-label.min { left: 0; }
-.gauge-label.max { right: 0; }
-.gauge-label.current {
-  left: calc(50% - 18px);
-  font-weight: bold;
-  top: -28px;
-  font-size: 1.2rem;
-}
+/* Removed legacy horizontal gauge styles */
 
 .improvement-tips {
   margin-top: 2rem;
@@ -313,6 +260,139 @@ hr {
 }
 .improvement-tips li {
   margin-bottom: 0.5rem;
+}
+
+.pro-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3.5rem 2rem 2.5rem 2rem;
+  min-width: 320px;
+  min-height: 520px;
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 8px 40px #1a4b6b18, 0 0 0 12px #e0e6ea33;
+  border: 1.5px solid #e0e6ea;
+  animation: fadeIn 1s;
+}
+.pro-maturity {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 1.2rem;
+  margin-top: 0.2rem;
+  letter-spacing: 1px;
+  color: #1a4b6b;
+  text-align: center;
+}
+.pro-maturity.avancé { color: #43a047; }
+.pro-maturity.intermédiaire { color: #1976d2; }
+.pro-maturity.débutant { color: #b0bec5; }
+/* Removed old arc gauge styles */
+.pro-tips-card {
+  background: #f8fafc;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px #1a4b6b11;
+  padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+  font-size: 1.08rem;
+  color: #1a4b6b;
+  border: 1px solid #e0e6ea;
+}
+.pro-tips-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  color: #1976d2;
+}
+.pro-tips-title .material-icons {
+  font-size: 1.3rem;
+  margin-right: 0.4rem;
+  color: #ffb300;
+}
+.pro-tips-card ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.pro-tips-card li {
+  margin-bottom: 0.5rem;
+  color: #1a4b6b;
+  font-size: 1.05rem;
+}
+
+/* Removed old donut chart styles */
+
+.horizontal-bar-container {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto 2.2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.horizontal-bar-bg {
+  width: 100%;
+  height: 28px;
+  background: #e0e6ea;
+  border-radius: 16px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 2px 8px #1a4b6b11;
+  margin-bottom: 0.4rem;
+}
+.horizontal-bar-fg {
+  height: 100%;
+  background: linear-gradient(90deg, #1976d2 0%, #ffffff 33%, #b0bec5 66%, #43a047 100%);
+  border-radius: 16px 0 0 16px;
+  transition: width 0.7s cubic-bezier(.4,2,.6,1);
+  position: relative;
+}
+.horizontal-bar-score {
+  position: absolute;
+  bottom: 100%;
+  transform: translate(-50%, -6px);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a4b6b;
+  z-index: 5;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  pointer-events: none;
+  background: #ffffff;
+  border: 1px solid #dfe6ee;
+  border-radius: 8px;
+  padding: 0.05rem 0.35rem;
+  box-shadow: 0 2px 6px #1a4b6b22;
+  transition: left 0.7s cubic-bezier(.4,2,.6,1);
+}
+.horizontal-bar-labels {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.2rem;
+  font-size: 1.05rem;
+  color: #888;
+  font-weight: 600;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.bar-label.min {
+  margin-left: 2px;
+}
+.bar-label.max {
+  margin-right: 2px;
+}
+.horizontal-bar-label {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
 }
 
 @media (max-width: 600px) {
@@ -378,25 +458,7 @@ hr {
     width: 54px !important;
     filter: drop-shadow(0 1px 2px #1a4b6b22) grayscale(0.2) opacity(0.85);
   }
-  .result-label {
-    font-size: 0.97rem;
-    margin-bottom: 1.1rem;
-  }
-  .maturity-badge {
-    font-size: 0.98rem;
-    padding: 0.35rem 0.8rem;
-  }
-  .score-gauge {
-    margin: 0.8rem 0 1rem 0;
-  }
-  .gauge-label {
-    font-size: 0.8rem;
-  }
-  .gauge-label.current {
-    font-size: 0.93rem;
-    left: calc(50% - 10px);
-    top: -18px;
-  }
+  /* Removed mobile overrides for legacy styles */
   .improvement-tips {
     margin-top: 1rem;
   }
@@ -419,5 +481,66 @@ hr {
   mat-radio-button {
     width: 100%;
     font-size: 1rem;
+  }
+  .pro-result, .result-card {
+    padding: 0.3rem 0.1rem 0.7rem 0.1rem;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #1a4b6b11;
+    max-width: 96vw;
+    width: 96vw;
+  }
+  .pro-maturity {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    margin-top: 0.1rem;
+  }
+  .horizontal-bar-container {
+    max-width: 92vw;
+    min-width: 0;
+  }
+  .horizontal-bar-bg {
+    height: 13px;
+    min-width: 0;
+  }
+  .horizontal-bar-fg {
+    border-radius: 8px 0 0 8px;
+  }
+  .horizontal-bar-score {
+    font-size: 0.9rem;
+    transform: translate(-50%, -4px);
+  }
+  .horizontal-bar-label {
+    font-size: 0.7rem;
+    margin-bottom: 0.1rem;
+  }
+  .horizontal-bar-labels {
+    font-size: 0.7rem;
+    margin-top: 0.05rem;
+    max-width: 92vw;
+  }
+  .pro-tips-card {
+    padding: 0.3rem 0.2rem 0.3rem 0.2rem;
+    font-size: 0.8rem;
+    max-width: 92vw;
+    margin-bottom: 0.7rem;
+  }
+  .pro-tips-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+  .pro-tips-card ul {
+    padding-left: 0.4rem;
+  }
+  .pro-tips-card li {
+    font-size: 0.8rem;
+  }
+  button.mat-raised-button {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.3rem;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 0.4rem;
   }
 }

@@ -112,21 +112,23 @@
 
 <!-- RESULT PAGE -->
 <div *ngIf="!showIntro && showResultPage" class="result-page">
-  <div class="result-card">
-    <div class="result-label">Votre score de maturité</div>
-    <div class="maturity-badge" [ngClass]="getMaturity().toLowerCase()">
+  <div class="result-card pro-result">
+    <div class="pro-maturity" [ngClass]="getMaturity().toLowerCase()">
       {{ getMaturity() }}
     </div>
-    <div class="score-gauge">
-      <div class="gauge-bg">
-        <div class="gauge-fill" [style.left]="((animatedScore + 20) / 40 * 100) + '%'" ></div>
-        <div class="gauge-label min">-20</div>
-        <div class="gauge-label max">20</div>
-        <div class="gauge-label current">{{ animatedScore }}</div>
+    <div class="horizontal-bar-container">
+      <div class="horizontal-bar-bg">
+        <div class="horizontal-bar-fg" [style.width]="getBarWidthPercent(animatedScore)"></div>
+        <div class="horizontal-bar-score" [style.left]="getBarMarkerPercent(animatedScore)">{{ animatedScore }}</div>
       </div>
-    </div> 
-    <div class="improvement-tips" *ngIf="getImprovementTips().length">
-      <h3>Conseils personnalisés pour progresser :</h3>
+      <div class="horizontal-bar-label">Score</div>
+      <div class="horizontal-bar-labels">
+        <span class="bar-label min">-20</span>
+        <span class="bar-label max">20</span>
+      </div>
+    </div>
+    <div class="pro-tips-card" *ngIf="getImprovementTips().length">
+      <div class="pro-tips-title"><span class="material-icons">lightbulb</span> Conseils personnalisés</div>
       <ul>
         <li *ngFor="let tip of getImprovementTips()">{{ tip }}</li>
       </ul>

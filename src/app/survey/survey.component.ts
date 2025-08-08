@@ -224,4 +224,65 @@ export class SurveyComponent {
     this.showIntro = false;
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
   }
+
+  // --- SVG Arc Gauge Methods ---
+  getArcPath(score: number): string {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const startAngle = Math.PI; // 180deg (left)
+    const endAngle = Math.PI * (1 - percent); // sweep to the right as score increases
+    const r = 120;
+    const cx = 150, cy = 150;
+    const x1 = cx + r * Math.cos(startAngle);
+    const y1 = cy + r * Math.sin(startAngle);
+    const x2 = cx + r * Math.cos(endAngle);
+    const y2 = cy + r * Math.sin(endAngle);
+    const largeArc = percent > 0.5 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
+  }
+  getMarkerX(score: number): number {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const angle = Math.PI * (1 - percent);
+    const r = 120;
+    const cx = 150;
+    return cx + r * Math.cos(angle);
+  }
+  getMarkerY(score: number): number {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const angle = Math.PI * (1 - percent);
+    const r = 120;
+    const cy = 150;
+    return cy + r * Math.sin(angle);
+  }
+
+  // --- Donut Chart Methods ---
+  getDonutCircumference(): number {
+    const r = 70;
+    return 2 * Math.PI * r;
+  }
+  getDonutOffset(score: number): number {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const circumference = this.getDonutCircumference();
+    // Donut starts at top (12 o'clock), so offset is circumference * (1 - percent)
+    return circumference * (1 - percent);
+  }
+
+  // --- Horizontal Bar Gauge Methods ---
+  // Width of the filled bar (unclamped)
+  getBarWidthPercent(score: number): string {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const bounded = Math.max(0, Math.min(1, percent));
+    return (bounded * 100) + '%';
+  }
+  // Position of the marker/score label (clamped so it stays inside)
+  getBarMarkerPercent(score: number): string {
+    const min = -20, max = 20;
+    const percent = (score - min) / (max - min);
+    const clamped = Math.max(0.05, Math.min(0.95, percent));
+    return (clamped * 100) + '%';
+  }
 }
