@@ -25,3 +25,24 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Deployment
+
+Website is deployed with Github Pages.
+
+Code can be deployed using Github Actions:
+
+https://github.com/ReliefApplications/questionnaire-innovation/actions
+
+Deployed website is available there:
+https://barometre-innovation.fr/
+
+### Deployment steps
+
+- Open Github Actions (link above)
+- Open [Github Pages action](https://github.com/ReliefApplications/questionnaire-innovation/actions/workflows/gh-pages.yml)
+- Click on `Run workflow` button on the right
+- Select branch to deploy from (branch where you did the new development)
+- Click on `Run workflow` button in the popup
+- Wait for the action to execute
+- Check the website
