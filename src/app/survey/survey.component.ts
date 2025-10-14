@@ -1,25 +1,26 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { SURVEY, SurveyCategory } from '../survey-data';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-survey',
   templateUrl: './survey.component.html',
-  styleUrls: ['./survey.component.css']
+  styleUrls: ['./survey.component.css'],
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0, overflow: 'hidden' }),
+        animate('300ms ease-out', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ height: 0, opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class SurveyComponent {
-  @ViewChild('googleForm') googleForm!: ElementRef<HTMLFormElement>;
-
-
-  constructor(private http: HttpClient) {}
-
-    formData: { [key: string]: string | number } = {};
-
   survey: SurveyCategory[] = SURVEY;
   answers: number[][] = this.survey.map(cat => Array(cat.questions.length).fill(null));
-  getFlatAnswers(): number[] {
-    return this.answers.flat();
-    }
   showIntro = true;
   showResultPage = false;
   showStatsPage = false;
@@ -33,7 +34,7 @@ export class SurveyComponent {
     taille: '',
     localisation: '',
     secteur: '',
-    email:''
+    email: ''
   };
 
   secteurs = [
@@ -60,21 +61,45 @@ export class SurveyComponent {
     'U — Activités extra-territoriales'
   ];
 
-  
+  expandedTips: Set<number> = new Set();
 
-  getImprovementTips(): string[] {
-    const tips: string[] = [];
-    this.survey.forEach((cat, catIdx) => {
-      cat.questions.forEach((q, qIdx) => {
-        const answer = this.answers[catIdx][qIdx];
-        if (answer === -1 && q.tipNo) {
-          tips.push(q.tipNo);
-        } else if (answer === 0 && q.tipPartial) {
-          tips.push(q.tipPartial);
+  getImprovementTips(): Array<{tip: string, details?: string, index: number}> {
+    const tips: Array<{tip: string, details?: string, index: number}> = [];
+    let tipIndex = 0;
+    
+    this.answers.forEach((cat, catIdx) => {
+      cat.forEach((ans, qIdx) => {
+        const question = this.survey[catIdx]?.questions[qIdx];
+        if (!question) return;
+        
+        if (ans === -1 && question.tipNo) {
+          tips.push({
+            tip: question.tipNo,
+            details: question.tipNo_details,
+            index: tipIndex++
+          });
+        } else if (ans === 0 && question.tipPartial) {
+          tips.push({
+            tip: question.tipPartial,
+            details: question.tipPartial_details,
+            index: tipIndex++
+          });
         }
       });
     });
     return tips;
+  }
+
+  toggleTipDetails(index: number): void {
+    if (this.expandedTips.has(index)) {
+      this.expandedTips.delete(index);
+    } else {
+      this.expandedTips.add(index);
+    }
+  }
+
+  isTipExpanded(index: number): boolean {
+    return this.expandedTips.has(index);
   }
 
   startSurvey() {
@@ -82,7 +107,6 @@ export class SurveyComponent {
     this.showResultPage = false;
     this.showStatsPage = false;
     this.animatedScore = 0;
-    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
   }
 
   showScorePage() {
@@ -103,6 +127,9 @@ export class SurveyComponent {
   }
 
   submitStats() {
+    // Send data to Google Forms
+    this.sendStatsToGoogleForm();
+    
     this.showStatsPage = false;
     this.showResultPage = true;
     this.animatedScore = 0;
@@ -117,10 +144,52 @@ export class SurveyComponent {
         clearInterval(interval);
       }
     }, 40);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.sendStatsToGoogleForm();
-
   }
+
+  getScore(): number {
+    return this.answers.flat().reduce((acc, val) => acc + (val ?? 0), 0);
+  }
+
+  getMaturity(): string {
+    const score = this.getScore();
+    if (score >= 15) return 'Avancé';
+    if (score >= 5) return 'Intermédiaire';
+    return 'Débutant';
+  }
+
+  getCategoryScores(): Array<{title: string, score: number, maxScore: number, percentage: number}> {
+    return this.survey.map((category, idx) => {
+      const categoryAnswers = this.answers[idx];
+      const score = categoryAnswers.reduce((acc, val) => acc + (val ?? 0), 0);
+      const maxScore = category.questions.length;
+      const percentage = ((score + maxScore) / (maxScore * 2)) * 100;
+      return {
+        title: category.title,
+        score: score,
+        maxScore: maxScore,
+        percentage: Math.round(percentage)
+      };
+    });
+  }
+
+  getStrongPoints(): string[] {
+    const scores = this.getCategoryScores();
+    return scores
+      .filter(cat => cat.percentage >= 70)
+      .map(cat => cat.title);
+  }
+
+  getWeakPoints(): string[] {
+    const scores = this.getCategoryScores();
+    return scores
+      .filter(cat => cat.percentage < 50)
+      .map(cat => cat.title);
+  }
+
+  allAnsweredForStep(i: number): boolean {
+    return this.answers[i].every(a => a !== null);
+  }
+
   sendStatsToGoogleForm(): void {
     const url = 'https://docs.google.com/forms/d/e/1FAIpQLSc7a9t7ozf_EHiF6KmQBzPXKySnCdlDQJRny_IQsRBLtQCRvg/formResponse';
   
@@ -146,54 +215,42 @@ export class SurveyComponent {
       //email
       'entry.599182817'
     ];
-  
-    const formData = new URLSearchParams();
-  
-    // Flatten answers (q1–q20)
-    let index = 0;
-    this.answers.forEach((category: any) => {
-      category.forEach((ans: any) => {
-        formData.append(entryIds[index], ans ?? '');
-        index++;
-      });
+
+    // Flatten answers array (q1-q20)
+    const flatAnswers = this.answers.flat();
+    
+    // Prepare form data
+    const formData = new FormData();
+    
+    // Add question answers (q1-q20)
+    for (let i = 0; i < 20; i++) {
+      formData.append(entryIds[i], flatAnswers[i]?.toString() || '');
+    }
+    
+    // Add stats
+    formData.append(entryIds[20], this.stats.fonction || '');
+    formData.append(entryIds[21], this.stats.fonctionAutre || '');
+    formData.append(entryIds[22], this.stats.genre || '');
+    formData.append(entryIds[23], this.stats.implication || '');
+    formData.append(entryIds[24], this.stats.taille || '');
+    formData.append(entryIds[25], this.stats.localisation || '');
+    formData.append(entryIds[26], this.stats.secteur || '');
+    
+    // Add score and maturity
+    formData.append(entryIds[27], this.getScore().toString());
+    formData.append(entryIds[28], this.getMaturity());
+    formData.append(entryIds[29], this.stats.email || ''); // email
+    
+    // Submit to Google Forms
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    }).then(() => {
+      console.log('Data sent to Google Forms successfully');
+    }).catch((error) => {
+      console.error('Error sending data to Google Forms:', error);
     });
-  
-    formData.append(entryIds[index++], this.stats.fonction ?? '');
-    formData.append(entryIds[index++], this.stats.fonctionAutre ?? '');
-    formData.append(entryIds[index++], this.stats.genre ?? '');
-    formData.append(entryIds[index++], this.stats.implication ?? '');
-    formData.append(entryIds[index++], this.stats.taille ?? '');
-    formData.append(entryIds[index++], this.stats.localisation ?? '');
-    formData.append(entryIds[index++], this.stats.secteur ?? '');
-  
-    // Append score and maturity
-    formData.append(entryIds[index++], String(this.getScore() ?? ''));
-    formData.append(entryIds[index++], this.getMaturity() ?? '');
-    formData.append(entryIds[index++], this.stats.email ?? '');
-
-  
-    this.http.post(url, formData.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      responseType: 'text' 
-    }).subscribe({
-      next: () => {},
-      error: (err) => {}
-    });
-  }
-  
-  getScore(): number {
-    return this.answers.flat().reduce((acc, val) => acc + (val ?? 0), 0);
-  }
-
-  getMaturity(): string {
-    const score = this.getScore();
-    if (score >= 15) return 'Avancé';
-    if (score >= 5) return 'Intermédiaire';
-    return 'Débutant';
-  }
-
-  allAnsweredForStep(i: number): boolean {
-    return this.answers[i].every(a => a !== null);
   }
 
   reset() {
@@ -202,6 +259,7 @@ export class SurveyComponent {
     this.showResultPage = false;
     this.showStatsPage = false;
     this.animatedScore = 0;
+    this.expandedTips.clear();
     this.stats = {
       fonction: '',
       fonctionAutre: '',
@@ -210,79 +268,7 @@ export class SurveyComponent {
       taille: '',
       localisation: '',
       secteur: '',
-      email:''
+      email: ''
     };
-  }
-
-  onStepChange() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  goToStatsPage() {
-    this.showStatsPage = true;
-    this.showResultPage = false;
-    this.showIntro = false;
-    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
-  }
-
-  // --- SVG Arc Gauge Methods ---
-  getArcPath(score: number): string {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const startAngle = Math.PI; // 180deg (left)
-    const endAngle = Math.PI * (1 - percent); // sweep to the right as score increases
-    const r = 120;
-    const cx = 150, cy = 150;
-    const x1 = cx + r * Math.cos(startAngle);
-    const y1 = cy + r * Math.sin(startAngle);
-    const x2 = cx + r * Math.cos(endAngle);
-    const y2 = cy + r * Math.sin(endAngle);
-    const largeArc = percent > 0.5 ? 1 : 0;
-    return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
-  }
-  getMarkerX(score: number): number {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const angle = Math.PI * (1 - percent);
-    const r = 120;
-    const cx = 150;
-    return cx + r * Math.cos(angle);
-  }
-  getMarkerY(score: number): number {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const angle = Math.PI * (1 - percent);
-    const r = 120;
-    const cy = 150;
-    return cy + r * Math.sin(angle);
-  }
-
-  // --- Donut Chart Methods ---
-  getDonutCircumference(): number {
-    const r = 70;
-    return 2 * Math.PI * r;
-  }
-  getDonutOffset(score: number): number {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const circumference = this.getDonutCircumference();
-    // Donut starts at top (12 o'clock), so offset is circumference * (1 - percent)
-    return circumference * (1 - percent);
-  }
-
-  // --- Horizontal Bar Gauge Methods ---
-  // Width of the filled bar (unclamped)
-  getBarWidthPercent(score: number): string {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const bounded = Math.max(0, Math.min(1, percent));
-    return (bounded * 100) + '%';
-  }
-  // Position of the marker/score label (clamped so it stays inside)
-  getBarMarkerPercent(score: number): string {
-    const min = -20, max = 20;
-    const percent = (score - min) / (max - min);
-    const clamped = Math.max(0.05, Math.min(0.95, percent));
-    return (clamped * 100) + '%';
   }
 }

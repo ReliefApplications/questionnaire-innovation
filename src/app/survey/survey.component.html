@@ -5,9 +5,9 @@
     <img src="assets/image.png" alt="École Polytechnique Logo" class="intro-logo" />
   </a>
     
-    <h1>Auto-évaluation de l’innovation</h1>
+    <h1>Bienvenue sur test Auto-évaluation de maturité de ses pratiques de gestion de l’innovation</h1>
     <p>
-      Ce questionnaire vous permet d'autoévaluer la maturité de votre organisation en matière d'innovation, selon les référentiels internationaux (ISO 56002, ISO 56003, Oslo, AFNOR, etc.).
+      Ce questionnaire vous permet d'autoévaluer la maturité de votre organisation en matière d'innovation, selon les référentiels internationaux (ISO 56002, Oslo, AFNOR, etc.).
     </p>
     <ul>
       <li>6 axes clés, 20 questions</li>
@@ -96,17 +96,10 @@
           <mat-option *ngFor="let s of secteurs" [value]="s">{{s}}</mat-option>
         </mat-select>
       </mat-form-field>
-      <!-- Email opt-in for report publication -->
-      <div style="margin: 15px 0 8px 0; font-weight: 500;">
-        Laissez votre email si vous souhaitez être informé de la publication du rapport d’analyse :
-      </div>
+
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="stats.email" name="email" type="email"  email
-               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" #emailModel="ngModel">
-        <mat-error *ngIf="emailModel.invalid && emailModel.touched">
-          Veuillez saisir une adresse email valide.
-        </mat-error>
+        <mat-label>Email (optionnel)</mat-label>
+        <input matInput type="email" [(ngModel)]="stats.email" name="email" placeholder="votre@email.com">
       </mat-form-field>
 
       <button mat-raised-button color="primary" class="stats-btn" type="submit" [disabled]="!statsForm.form.valid">Voir mon score</button>
@@ -116,48 +109,86 @@
 
 <!-- RESULT PAGE -->
 <div *ngIf="!showIntro && showResultPage" class="result-page">
-  <div class="result-card pro-result">
-    <div class="pro-maturity" [ngClass]="getMaturity().toLowerCase()">
-      {{ getMaturity() }}
-    </div>
-    <div class="horizontal-bar-container">
-      <div class="horizontal-bar-bg">
-        <div class="horizontal-bar-fg" [style.width]="getBarWidthPercent(animatedScore)"></div>
-        <div class="horizontal-bar-score" [style.left]="getBarMarkerPercent(animatedScore)">{{ animatedScore }}</div>
+  <div class="result-container">
+    <!-- Score principal -->
+    <div class="result-card main-score-card">
+      <div class="result-label">Votre score de maturité</div>
+      <div class="maturity-badge" [ngClass]="getMaturity().toLowerCase()">
+        {{ getMaturity() }}
       </div>
-      <div class="horizontal-bar-label">Score</div>
-      <div class="horizontal-bar-labels">
-        <span class="bar-label min">-20</span>
-        <span class="bar-label max">20</span>
+      <div class="score-gauge">
+        <div class="gauge-bg">
+          <div class="gauge-fill" [style.left]="((animatedScore + 20) / 40 * 100) + '%'" ></div>
+          <div class="gauge-label min">-20</div>
+          <div class="gauge-label max">20</div>
+          <div class="gauge-label current">{{ animatedScore }}</div>
+        </div>
       </div>
     </div>
-    <div class="pro-tips-card" *ngIf="getImprovementTips().length">
-      <div class="pro-tips-title"><span class="material-icons">lightbulb</span> Conseils personnalisés</div>
+
+    <!-- Scores par catégorie -->
+    <div class="result-card category-scores-card">
+      <h3>📊 Détail par axe d'innovation</h3>
+      <div class="category-score" *ngFor="let cat of getCategoryScores()">
+        <div class="category-header">
+          <span class="category-name">{{ cat.title }}</span>
+          <span class="category-percentage">{{ cat.percentage }}%</span>
+        </div>
+        <div class="category-bar">
+          <div class="category-bar-fill" [style.width.%]="cat.percentage" 
+               [ngClass]="{'low': cat.percentage < 50, 'medium': cat.percentage >= 50 && cat.percentage < 70, 'high': cat.percentage >= 70}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Axes d'amélioration prioritaires -->
+    <div class="result-card weaknesses-card" *ngIf="getWeakPoints().length">
+      <h3>🎯 Axes d'amélioration prioritaires</h3>
       <ul>
-        <li *ngFor="let tip of getImprovementTips()">{{ tip }}</li>
+        <li *ngFor="let point of getWeakPoints()">{{ point }}</li>
       </ul>
     </div>
-    <button mat-raised-button color="primary" (click)="reset()">Recommencer</button>
-    <div class="support-text" style="margin-top: 1rem;">
-      Avec le soutien technique de Relief Applications
-    </div>
-    <a href="https://reliefapplications.org/" target="_blank">
-      <img src="assets/logo.png" alt="Relief Applications Logo" class="support-logo" style="width: 100px; height: auto;" />
-    </a>
-  </div>
- 
-  <div class="confetti"></div>
 
+    <!-- Conseils personnalisés -->
+    <div class="result-card tips-card" *ngIf="getImprovementTips().length">
+      <h3>💡 Conseils personnalisés pour progresser</h3>
+      <div class="tip-item" *ngFor="let tipObj of getImprovementTips()">
+        <div class="tip-header" (click)="toggleTipDetails(tipObj.index)">
+          <span class="tip-icon" [class.expanded]="isTipExpanded(tipObj.index)">
+            <mat-icon>{{ isTipExpanded(tipObj.index) ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </span>
+          <span class="tip-text">{{ tipObj.tip }}</span>
+        </div>
+        <div class="tip-details" *ngIf="isTipExpanded(tipObj.index) && tipObj.details" [@slideDown]>
+          <p>{{ tipObj.details }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton recommencer -->
+    <div class="result-actions">
+      <button mat-raised-button color="primary" class="btn-restart" (click)="reset()">
+        <mat-icon>refresh</mat-icon>
+        Recommencer l'évaluation
+      </button>
+    </div>
+  </div>
+  <div class="confetti"></div>
 </div>
 <!-- SURVEY PAGE -->
 <div *ngIf="!showIntro && !showResultPage && !showStatsPage" class="survey-frame">
-  <mat-horizontal-stepper linear (selectionChange)="onStepChange()">
+  <mat-horizontal-stepper linear>
     <mat-step *ngFor="let category of survey; let i = index">
       <form>
         <ng-template matStepLabel>{{category.title}}</ng-template>
         <h2 class="step-title">{{category.title}}</h2>
-        <div *ngFor="let q of category.questions; let j = index">
-          <p><b>{{j + 1}}. {{q.text}}</b> <br><small>{{q.reference}}</small></p>
+        <div *ngFor="let q of category.questions; let j = index" class="question-block">
+          <p class="question-text">
+            <span class="question-number" *ngIf="q.questionNumber">{{q.questionNumber}}</span>
+            <b>{{q.text}}</b>
+          </p>
+          <p class="question-reference"><small>{{q.reference}}</small></p>
           <mat-radio-group [(ngModel)]="answers[i][j]" name="q{{i}}-{{j}}">
             <mat-radio-button [value]="-1">Non</mat-radio-button>
             <mat-radio-button [value]="0">Partiellement</mat-radio-button>
@@ -168,7 +199,7 @@
         <div>
           <button mat-button matStepperPrevious *ngIf="i > 0">Précédent</button>
           <button mat-button matStepperNext *ngIf="i < survey.length - 1" [disabled]="!allAnsweredForStep(i)">Suivant</button>
-          <button mat-button *ngIf="i === survey.length - 1" (click)="goToStatsPage()" [disabled]="!allAnsweredForStep(i)">Voir le score</button>
+          <button mat-button *ngIf="i === survey.length - 1" (click)="showStatsPage = true" [disabled]="!allAnsweredForStep(i)">Voir le score</button>
         </div>
       </form>
     </mat-step>
