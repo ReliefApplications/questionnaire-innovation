@@ -2,6 +2,97 @@ import { Component } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { SURVEY, SurveyCategory } from '../survey-data';
 
+const COLOR_STOPS = [
+  { p: 0, c: [239, 68, 68] },   // Red (0%) - Start
+  { p: 50, c: [245, 158, 11] }, // Yellow (50%) - End of R->Y transition
+  { p: 75, c: [16, 185, 129] }, // Green (75%) - End of Y->G transition
+  { p: 100, c: [59, 130, 246] },// Blue (100%) - End of G->B transition
+];
+
+/**
+ * Converts a hex color string (e.g., #RRGGBB) to an RGB array [R, G, B].
+ * @param hex The hex color string.
+ */
+function hexToRgb(hex: string): number[] {
+  const bigint = parseInt(hex.slice(1), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
+}
+
+/**
+ * Converts an RGB array to a hex color string.
+ * @param r Red component (0-255).
+ * @param g Green component (0-255).
+ * @param b Blue component (0-255).
+ */
+function rgbToHex(r: number, g: number, b: number): string {
+    r = Math.round(r);
+    g = Math.round(g);
+    b = Math.round(b);
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+
+/**
+ * Creates a slightly lighter/darker version of a hex color for the vertical gradient effect.
+ * @param hex The base hex color.
+ * @param amount The amount to adjust (e.g., 20 for lighter, -20 for darker).
+ * @returns A new hex color string.
+ */
+function adjustColor(hex: string, amount: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const newR = Math.max(0, Math.min(255, r + amount));
+  const newG = Math.max(0, Math.min(255, g + amount));
+  const newB = Math.max(0, Math.min(255, b + amount));
+  return rgbToHex(newR, newG, newB);
+}
+
+/**
+ * Gets a single, interpolated color (in Hex format) based on the progress percentage.
+ * The interpolation happens smoothly across the defined stops (R -> Y -> G -> B).
+ * @param percent The progress percentage (0-100).
+ * @returns The dynamically calculated hex color string.
+ */
+function getDynamicColor(percent: number): string {
+  // Clamp the percentage to 0-100
+  percent = Math.max(0, Math.min(100, percent));
+
+  let startStop = COLOR_STOPS[0];
+  let endStop = COLOR_STOPS[COLOR_STOPS.length - 1]; 
+
+  // Find the segment the percentage belongs to
+  for (let i = 0; i < COLOR_STOPS.length - 1; i++) {
+    if (percent >= COLOR_STOPS[i].p && percent <= COLOR_STOPS[i + 1].p) {
+      startStop = COLOR_STOPS[i];
+      endStop = COLOR_STOPS[i + 1];
+      break;
+    }
+  }
+  
+  // If the percentage matches a stop point exactly, return its color
+  if (percent === startStop.p) {
+      return rgbToHex(startStop.c[0], startStop.c[1], startStop.c[2]);
+  }
+  if (percent === endStop.p) {
+       return rgbToHex(endStop.c[0], endStop.c[1], endStop.c[2]);
+  }
+
+  // Calculate normalized position within the segment (0 to 1)
+  const segmentRange = endStop.p - startStop.p;
+  // Handle segmentRange of 0 defensively (shouldn't happen with the new stops)
+  if (segmentRange <= 0) { return rgbToHex(startStop.c[0], startStop.c[1], startStop.c[2]); }
+
+  const normalizedPosition = (percent - startStop.p) / segmentRange;
+
+  // Interpolate R, G, B components
+  const r = startStop.c[0] + (endStop.c[0] - startStop.c[0]) * normalizedPosition;
+  const g = startStop.c[1] + (endStop.c[1] - startStop.c[1]) * normalizedPosition;
+  const b = startStop.c[2] + (endStop.c[2] - startStop.c[2]) * normalizedPosition;
+
+  return rgbToHex(r, g, b);
+}
+
 @Component({
   selector: 'app-survey',
   templateUrl: './survey.component.html',
@@ -157,17 +248,25 @@ export class SurveyComponent {
     return 'Débutant';
   }
 
-  getCategoryScores(): Array<{title: string, score: number, maxScore: number, percentage: number}> {
+  getCategoryScores(): Array<{title: string, score: number, maxScore: number, percentage: number, gradient: string}> {
     return this.survey.map((category, idx) => {
       const categoryAnswers = this.answers[idx];
       const score = categoryAnswers.reduce((acc, val) => acc + (val ?? 0), 0);
       const maxScore = category.questions.length;
       const percentage = ((score + maxScore) / (maxScore * 2)) * 100;
+      const roundedPercentage = Math.round(percentage);
+      
+      // Calculate dynamic gradient for this percentage
+      const baseColor = getDynamicColor(roundedPercentage);
+      const lighterColor = adjustColor(baseColor, 20);
+      const gradient = `linear-gradient(to bottom, ${lighterColor} 0%, ${baseColor} 100%)`;
+      
       return {
         title: category.title,
         score: score,
         maxScore: maxScore,
-        percentage: Math.round(percentage)
+        percentage: roundedPercentage,
+        gradient: gradient
       };
     });
   }

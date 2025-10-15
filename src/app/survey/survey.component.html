@@ -128,15 +128,16 @@
 
     <!-- Scores par catégorie -->
     <div class="result-card category-scores-card">
-      <h3>📊 Détail par axe d'innovation</h3>
+      <h3>Détail par axe d'innovation</h3>
       <div class="category-score" *ngFor="let cat of getCategoryScores()">
         <div class="category-header">
           <span class="category-name">{{ cat.title }}</span>
           <span class="category-percentage">{{ cat.percentage }}%</span>
         </div>
         <div class="category-bar">
-          <div class="category-bar-fill" [style.width.%]="cat.percentage" 
-               [ngClass]="{'low': cat.percentage < 50, 'medium': cat.percentage >= 50 && cat.percentage < 70, 'high': cat.percentage >= 70}">
+          <div class="category-bar-fill" 
+               [style.width.%]="cat.percentage" 
+               [style.background]="cat.gradient">
           </div>
         </div>
       </div>
